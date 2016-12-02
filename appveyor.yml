@@ -38,5 +38,7 @@ build_script:
   - invoke build -i
   # run test suite
   - invoke test
+  # clean up
+  - git clean -xdf
   # test the package build (which includes a test suite run on the package)
   - invoke build
