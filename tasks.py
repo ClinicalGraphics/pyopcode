@@ -17,6 +17,7 @@ import pkg_conf
 on_win32 = sys.platform.startswith("win")
 on_linux = sys.platform.startswith("linux")
 on_osx = sys.platform.startswith("darwin")
+on_unix = on_linux or on_osx
 
 
 def _print(message):
@@ -38,26 +39,51 @@ def _confirm(prompt='Are you sure?', error='Cancelled.'):
 
     return True
 
-
 @task
-def build(python=None):
+def build(python=None, inplace=False):
     """
     Builds the conda package
     """
     _print("Building your package now")
 
-    sep = ' && '
-    # build with the required anaconda channels in the environment.yml
-    command = "conda build conda-recipe --no-anaconda-upload --quiet " +\
-              ' '.join(['-c {}'.format(c) for c in pkg_conf.get_channels()])
-    if python is not None:
-        command = command + ' --python ' + python
-    if on_win32:
-        run("deactivate" + sep + command)
-    elif on_linux:
-        run("source deactivate" + sep + command, pty=True)
+    if inplace:
+        # fake conda-build envvars
+        env = {
+            'PY_VER': '{}.{}'.format(*sys.version_info[:2]),
+            'ARCH': '64',
+            'PREFIX': sys.exec_prefix,
+            'SP_DIR': "{0}{1}Lib{1}site-packages".format(sys.exec_prefix, os.sep),
+        }
+        # make sure we activate our build tools on windows automatically
+        if on_win32:
+            # importing setuptools patches distutils so that it knows how to find VC for python 2.7
+            # Leverage the hard work done by setuptools/distutils to find vcvarsall
+            import setuptools
+            from distutils.msvc9compiler import find_vcvarsall
+            if sys.version_info[:2] == (3, 5):
+                vcvarsall = find_vcvarsall(14)
+                env['CMAKE_GENERATOR'] = 'Visual Studio 14 2015 Win64'
+            elif sys.version_info[:2] == (2, 7):
+                vcvarsall = find_vcvarsall(9)
+                env['CMAKE_GENERATOR'] = 'Visual Studio 9 2008 Win64'
+            else:
+                _exit("version of python not supported")
+            cmd = "activate {}".format(os.path.basename(sys.exec_prefix))
+            cmd += ' && "{}" amd64'.format(vcvarsall)
+            cmd += ' && call "conda-recipe/bld.bat"'
+        # set the environment, because invoke can't do it for some reason
+        _print("Using fake conda-build environment: {}".format(env))
+        for k, v in env.items():
+            os.environ[k] = v
+        # now run the build
+        run(cmd, echo=True, shell=True)
     else:
-        raise NotImplementedError("Building is not supported for this OS")
+        # build with the required anaconda channels in the environment.yml
+        command = "conda build conda-recipe --no-anaconda-upload --quiet " +\
+                  ' '.join(['-c {}'.format(c) for c in pkg_conf.get_channels()])
+        if python is not None:
+            command = command + ' --python ' + python
+        run(command, pty=on_unix)
 
 
 @task
@@ -66,8 +92,7 @@ def test():
     Runs the test suite
     """
     pkg_name = pkg_conf.PKG_ROOT
-    max_cpu_count = max(min(multiprocessing.cpu_count(), 4), 1)  # This should result in between 1-4 CPUs
-    run("py.test -n{0} --cov={1} --pyargs {1}".format(max_cpu_count, pkg_name))
+    run("py.test --pyargs {}".format(pkg_name))
 
 
 @task
@@ -152,7 +177,7 @@ def build_ci(branch=None, revision=None, token=None, provider='appveyor'):
 def _browse(url):
     if on_win32:
         run('explorer "{}"'.format(url), hide='stdout')
-    elif on_linux:
+    elif on_unix:
         run('xdg-open "{}"'.format(url), hide='stdout')
     else:
         raise NotImplementedError("Browsing is not supported for this OS")
@@ -393,13 +418,13 @@ def release(yes=False):
         version, pkg_conf.get_build_number(), pkg_conf.PKG_NAME, pkg_conf.ANACONDA_USER))
     if yes or _confirm(prompt="Do you want to continue?"):
         cmd = "conda build conda-recipe --output"
-        pkg_path = run(cmd, pty=on_linux, hide='stdout').stdout.strip()
+        pkg_path = run(cmd, pty=on_unix, hide='stdout').stdout.strip()
         _print(pkg_path)
 
         cmd = "deactivate && conda build conda-recipe --no-anaconda-upload --quiet"
-        if on_linux:
+        if on_unix:
             cmd = "source " + cmd
-        run(cmd, pty=on_linux)
+        run(cmd, pty=on_unix)
 
         if os.path.exists(pkg_path):
             try:
