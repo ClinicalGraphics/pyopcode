@@ -19,7 +19,7 @@ cd ..
 cmake --build ./build --clean-first --config %BUILD_CONFIG%
 if %errorlevel% neq 0 exit /b %errorlevel%
 
-copy .\build\%BUILD_CONFIG%\_pyopcode.pyd "%PREFIX%\dlls\_pyopcode.pyd"
+copy .\build\_pyopcode.pyd "%PREFIX%\dlls\_pyopcode.pyd"
 
 cd ..
 
