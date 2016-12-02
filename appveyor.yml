@@ -17,7 +17,7 @@ install:
   # and that would make it too long, so we redefine the whole thing here
   - set PATH=%PYTHON%;%PYTHON%\Scripts;%SystemRoot%\system32;%SystemRoot%;%SystemRoot%\System32\Wbem;
   - set PATH=%PATH%;%SYSTEMROOT%\System32\WindowsPowerShell\v1.0\;C:\Program Files\Mercurial;
-  - set PATH=%PATH%;C:\Program Files\7-Zip;C:\Program Files\AppVeyor\BuildAgent;
+  - set PATH=%PATH%;C:\Program Files\7-Zip;C:\Program Files\AppVeyor\BuildAgent;C:\Program Files\Git\cmd;
 
   # make sure conda is up to date and configured
   - conda update conda --yes --quiet
