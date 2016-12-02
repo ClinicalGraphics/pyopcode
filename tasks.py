@@ -69,6 +69,8 @@ def build(python=None, inplace=False):
             cmd = "activate {}".format(os.path.basename(sys.exec_prefix))
             cmd += ' && "{}" amd64'.format(vcvarsall)
             cmd += ' && call "conda-recipe/bld.bat"'
+        else:
+            _exit("in-place builds are not supported on other platforms yet; should be easy, please add it to tasks.py")
         # set the environment, because invoke can't do it for some reason
         _print("Using fake conda-build environment: {}".format(env))
         for k, v in env.items():

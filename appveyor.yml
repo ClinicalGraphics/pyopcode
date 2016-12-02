@@ -3,11 +3,11 @@ environment:
     # http://www.appveyor.com/docs/installed-software#python
     - PYTHON: C:\Miniconda-x64
       CONDA_PY: 27
-      CONDA_NPY: 110
+      CONDA_NPY: 111
 
     - PYTHON: C:\Miniconda35-x64
       CONDA_PY: 35
-      CONDA_NPY: 110
+      CONDA_NPY: 111
 
 platform:
   - x64
@@ -24,7 +24,7 @@ install:
   - conda config --set show_channel_urls True --set always_yes True
 
   # Install the necessary packages
-  - conda install conda-build jinja2 anaconda-client --quiet
+  - conda install conda-build=1.21.0 jinja2 anaconda-client --quiet
   # Show us the conda configuration we have right now
   - conda info -a
   # If this needs any private packages, we'll have to be more creative
@@ -34,5 +34,9 @@ install:
 build_script:
   # There are so many dependencies for the invoke commands that it's easier to use the environment
   - activate pyopcode
-  # build conda package; no upload
+  # test in-place building
+  - invoke build -i
+  # run test suite
+  - invoke test
+  # test the package build (which includes a test suite run on the package)
   - invoke build
