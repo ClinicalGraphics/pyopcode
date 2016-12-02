@@ -5,7 +5,7 @@ cd pyopcode
 mkdir build
 cd build
 
-cmake ../src -G"%CMAKE_GENERATOR%" ^
+cmake ../src -G"NMake Makefiles" ^
     -Wno-dev ^
     -DCMAKE_BUILD_TYPE=%BUILD_CONFIG% ^
     -DCMAKE_INSTALL_PREFIX="%PREFIX%" ^

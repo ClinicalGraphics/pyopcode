@@ -62,10 +62,8 @@ def build(python=None, inplace=False):
             from distutils.msvc9compiler import find_vcvarsall
             if sys.version_info[:2] == (3, 5):
                 vcvarsall = find_vcvarsall(14)
-                env['CMAKE_GENERATOR'] = 'Visual Studio 14 2015 Win64'
             elif sys.version_info[:2] == (2, 7):
                 vcvarsall = find_vcvarsall(9)
-                env['CMAKE_GENERATOR'] = 'Visual Studio 9 2008 Win64'
             else:
                 _exit("version of python not supported")
             cmd = "activate {}".format(os.path.basename(sys.exec_prefix))
