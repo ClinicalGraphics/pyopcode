@@ -16,12 +16,11 @@ cmake ../src -G"NMake Makefiles" ^
 
 cd ..
 
-cmake --build ./build --clean-first --target ALL_BUILD --config %BUILD_CONFIG%
+cmake --build ./build --clean-first --config %BUILD_CONFIG%
 if %errorlevel% neq 0 exit /b %errorlevel%
 
 copy .\build\%BUILD_CONFIG%\_pyopcode.pyd "%PREFIX%\dlls\_pyopcode.pyd"
 
 cd ..
 
-python setup.py bdist
-python setup.py install
+python setup.py bdist install --force
