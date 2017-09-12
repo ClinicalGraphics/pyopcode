@@ -3,7 +3,7 @@ project (_pyopcode)
 
 set(Boost_USE_STATIC_LIBS OFF)
 set(Boost_USE_MULTITHREADED ON)
-find_package(Boost COMPONENTS python REQUIRED)
+find_package(Boost COMPONENTS python${BOOST_PYTHON_SUFFIX} REQUIRED)
 message("Include dirs of boost: " ${Boost_INCLUDE_DIRS} )
 message("Libs of boost: " ${Boost_LIBRARIES} )
 
