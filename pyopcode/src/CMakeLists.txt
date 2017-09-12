@@ -1,16 +1,16 @@
 cmake_minimum_required (VERSION 3.5)
 project (_pyopcode)
 
+find_package(PythonInterp REQUIRED)
+find_package(PythonLibs REQUIRED)
+message("Include dirs of Python: " ${PYTHON_INCLUDE_DIRS})
+message("Libs of Python: " ${PYTHON_LIBRARIES})
+
 set(Boost_USE_STATIC_LIBS OFF)
 set(Boost_USE_MULTITHREADED ON)
 find_package(Boost COMPONENTS python REQUIRED)
 message("Include dirs of boost: " ${Boost_INCLUDE_DIRS} )
 message("Libs of boost: " ${Boost_LIBRARIES} )
-
-find_package(PythonLibs REQUIRED)
-message("Include dirs of Python: " ${PYTHON_INCLUDE_DIRS} )
-message("Libs of Python: " ${PYTHON_LIBRARIES} )
-
 
 file(GLOB OPCODE_SOURCE opcode/*.cpp)
 file(GLOB ICE_SOURCE opcode/Ice/*.cpp)
