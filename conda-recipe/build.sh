@@ -10,10 +10,13 @@ cd pyopcode
 mkdir build
 cd build
 
-if [ `uname` = "Darwin" ]; then
-    # Specify same compiler as with which boost (1.61) is compiled
-    CXX_FLAGS="${CXX_FLAGS} -stdlib=libstdc++"
-fi
+# we are now (20171214) building with boost 1.65 and up.
+# we prefer building with non-legacy libs, that is with libc++
+
+# if [ `uname` = "Darwin" ]; then
+#     # Specify same compiler as with which boost (1.61) is compiled
+#     CXX_FLAGS="${CXX_FLAGS} -stdlib=libstdc++"
+# fi
 
 cmake ../src \
     -Wno-dev \
@@ -24,7 +27,8 @@ cmake ../src \
     -DPYTHON_INCLUDE_DIR:PATH=${PYTHON_INCLUDE} \
     -DPYTHON_LIBRARY:FILEPATH=${PYTHON_LIBRARY} \
     -DNUMPY_INCLUDE_DIR:PATH="${SP_DIR}/numpy/core/include" \
-    -DBOOST_ROOT:PATH=${PREFIX}/include
+    -DBOOST_INCLUDEDIR:PATH="${PREFIX}/include" \
+    -DBOOST_LIBRARYDIR:PATH="${PREFIX}/lib"
 
 make -j${CPU_COUNT}
 

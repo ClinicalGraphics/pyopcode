@@ -18,13 +18,13 @@ requirements:
   - setuptools
   - cmake
   - numpy x.x
-  - boost 1.61.0
+  - boost
   - pyyaml 3.12
 
   run:
   - python
   - numpy x.x
-  - boost 1.61.0
+  - boost
 
 test:
   commands:
