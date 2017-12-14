@@ -10,10 +10,13 @@ cd pyopcode
 mkdir build
 cd build
 
-if [ `uname` = "Darwin" ]; then
-    # Specify same compiler as with which boost (1.61) is compiled
-    CXX_FLAGS="${CXX_FLAGS} -stdlib=libstdc++"
-fi
+# we are now (20171214) building with boost 1.65 and up.
+# we prefer building with non-legacy libs, that is with libc++
+
+# if [ `uname` = "Darwin" ]; then
+#     # Specify same compiler as with which boost (1.61) is compiled
+#     CXX_FLAGS="${CXX_FLAGS} -stdlib=libstdc++"
+# fi
 
 cmake ../src \
     -Wno-dev \
