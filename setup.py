@@ -1,33 +1,39 @@
-from setuptools import find_packages
-from distutils.core import setup
+# flake8: noqa
+from setuptools import Extension, find_packages, setup
 
-import pkg_conf
+from glob import iglob
+
+from setup_utils import get_data_files, get_package_data, is_win, is_darwin
+from version import __version__
+
+
+packages = find_packages()
+package_data = get_package_data(packages, exclude=('.py', '.pyc', '.cpp', '.h'))
+opcode_src = list(iglob("vendor/opcode/**/*.cpp", recursive=True))
+
+compile_args = []
+runtime_library_dirs = []
+libraries = []
+if is_win:
+    compile_args = ["/DICE_NO_DLL", "/DBAN_OPCODE_AUTOLINK"]
+    libraries = ["boost_python36-vc141-mt-x64-1_67", "boost_numpy36-vc141-mt-x64-1_67"]
+else:
+    runtime_library_dirs = ["$ORIGIN"]
+    libraries = ["boost_python36", "boost_numpy36"]
 
 setup(
-    keywords = "OPCODE numpy",
-    name=pkg_conf.PKG_NAME,
-    version=pkg_conf.get_version(),
-    packages=find_packages(),
-    install_requires=['pyyaml'],
-    description=pkg_conf.get_recipe_meta()['about']['summary'],
-    long_description=pkg_conf.get_readme_rst(),
-    author=pkg_conf.AUTHOR,
-    author_email=pkg_conf.AUTHOR_EMAIL,
-    url=pkg_conf.get_recipe_meta()['about']['home'],
-    license=pkg_conf.get_recipe_meta()['about']['license'],
-    platforms='any',
-    classifiers=[
-        "Development Status :: 4 - Beta",
-        'Intended Audience :: Science/Research',
-        'Intended Audience :: Developers',
-        "Topic :: Utilities",
-        'Topic :: Scientific/Engineering',
-        'License :: {}'.format(pkg_conf.get_recipe_meta()['about']['license']),
-        'Operating System :: MacOS :: MacOS X',
-        'Operating System :: Microsoft :: Windows',
-        'Operating System :: POSIX',
-        'Programming Language :: Python',
-        'Programming Language :: Python :: 2.7',
-        'Programming Language :: Python :: 3.5',
+    name='pyopcode',
+    version=__version__,
+    packages=packages,
+    install_requires=['numpy ~= 1.14'],
+    ext_modules=[
+        Extension('pyopcode.api', ['pyopcode/api.cpp'] + opcode_src,
+                  include_dirs=['build_boost/include', 'build_boost/include/boost-1_67', 'vendor', 'vendor/opcode', 'vendor/opcode/Ice'],
+                  library_dirs=['pyopcode'],
+                  libraries=libraries,
+                  runtime_library_dirs=runtime_library_dirs,
+                  extra_compile_args=compile_args),
     ],
+    package_data=package_data,
+    include_package_data=True,
 )
