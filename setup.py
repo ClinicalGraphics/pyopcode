@@ -12,12 +12,16 @@ package_data = get_package_data(packages, exclude=('.py', '.pyc', '.cpp', '.h'))
 opcode_src = list(iglob("vendor/opcode/**/*.cpp", recursive=True))
 
 compile_args = []
+link_args = []
 runtime_library_dirs = []
 libraries = []
 if is_win:
     # see https://github.com/boostorg/python/issues/193 for /DBOOST_ALL_NO_LIB
     compile_args = ["/DICE_NO_DLL", "/DBAN_OPCODE_AUTOLINK", "/DBOOST_ALL_NO_LIB"]
     libraries = ["boost_python36-vc141-mt-x64-1_67", "boost_numpy36-vc141-mt-x64-1_67"]
+elif is_darwin:
+    link_args = ["-Wl,-rpath,@loader_path"]
+    libraries = ["boost_python36", "boost_numpy36"]
 else:
     runtime_library_dirs = ["$ORIGIN"]
     libraries = ["boost_python36", "boost_numpy36"]
@@ -33,7 +37,8 @@ setup(
                   library_dirs=['pyopcode'],
                   libraries=libraries,
                   runtime_library_dirs=runtime_library_dirs,
-                  extra_compile_args=compile_args),
+                  extra_compile_args=compile_args,
+                  extra_link_args=link_args),
     ],
     package_data=package_data,
     include_package_data=True,

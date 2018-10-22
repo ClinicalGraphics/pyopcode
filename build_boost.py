@@ -3,7 +3,7 @@ import subprocess
 from multiprocessing import cpu_count
 from os.path import abspath, exists
 
-from setup_utils import get_include_dir, get_vcvarsall, is_win
+from setup_utils import get_include_dir, get_vcvarsall, is_win, is_darwin
 
 
 def call(cmd, **kwargs):
@@ -24,6 +24,8 @@ def main():
         toolset = "msvc"
         sh_ext = "bat"
         sh_prefix = ""
+    if is_darwin:
+        toolset = "clang"
     if not exists(build_prefix):
         call(f"{sh_prefix}bootstrap.{sh_ext}", cwd="boost_1_67_0")
     call(f"{sh_prefix}b2"
