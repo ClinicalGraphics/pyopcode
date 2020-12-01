@@ -1,0 +1,38 @@
+package:
+  name: pyopcode
+  version: 0.4.0
+
+source:
+  path: ..
+
+build:
+  number: 0
+  script: python -m pip install . -vvv
+
+requirements:
+  build:
+    - {{ compiler('cxx') }}
+
+  host:
+    - python {{ python }}
+    - pip
+    - pybind11 >=2.6.0
+    - boost-cpp # this is uncompiled source dependency only, and does not imply run requirements
+
+  run:
+    - python {{ python }}
+    - numpy # not; any numpy is fine, and it is not a build/host requirement
+
+test:
+  requires:
+    - pytest
+  imports:
+    - pyopcode
+  source_files:
+    - tests
+  commands:
+    - python -m pytest
+
+about:
+  summary: python bindings for opcode using pybind11.
+  license_file: LICENSE

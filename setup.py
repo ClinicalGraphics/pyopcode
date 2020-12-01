@@ -1,45 +1,42 @@
-# flake8: noqa
-from setuptools import Extension, find_packages, setup
-
+from setuptools import setup
 from glob import iglob
 
-from setup_utils import get_data_files, get_package_data, is_win, is_darwin
-from version import __version__
+# Available at setup time due to pyproject.toml
+from pybind11.setup_helpers import Pybind11Extension, build_ext
+from pybind11 import get_cmake_dir
 
+import sys
 
-packages = find_packages()
-package_data = get_package_data(packages, exclude=('.py', '.pyc', '.cpp', '.h'))
-opcode_src = list(iglob("vendor/opcode/**/*.cpp", recursive=True))
+__version__ = "0.4.0"
 
-compile_args = []
-link_args = []
-runtime_library_dirs = []
-libraries = []
-if is_win:
-    # see https://github.com/boostorg/python/issues/193 for /DBOOST_ALL_NO_LIB
-    compile_args = ["/DICE_NO_DLL", "/DBAN_OPCODE_AUTOLINK", "/DBOOST_ALL_NO_LIB"]
-    libraries = ["boost_python36-vc141-mt-x64-1_67", "boost_numpy36-vc141-mt-x64-1_67"]
-elif is_darwin:
-    link_args = ["-Wl,-rpath,@loader_path"]
-    libraries = ["boost_python36", "boost_numpy36"]
-else:
-    runtime_library_dirs = ["$ORIGIN"]
-    libraries = ["boost_python36", "boost_numpy36"]
+# The main interface is through Pybind11Extension.
+# * You can add cxx_std=11/14/17, and then build_ext can be removed.
+# * You can set include_pybind11=false to add the include directory yourself,
+#   say from a submodule.
+#
+# Note:
+#   Sort input source files if you glob sources to ensure bit-for-bit
+#   reproducible builds (https://github.com/pybind/python_example/pull/53)
+
+opcode_src = sorted(iglob("vendor/opcode/**/*.cpp", recursive=True))
+opcode_include = ['vendor', 'vendor/opcode', 'vendor/opcode/Ice']
+
+ext_modules = [
+    Pybind11Extension("pyopcode",
+        ["pyopcode/api.cpp"] + opcode_src,
+        include_dirs=opcode_include,
+    ),
+]
 
 setup(
-    name='pyopcode',
+    name="pyopcode",
     version=__version__,
-    packages=packages,
-    install_requires=['numpy ~= 1.14'],
-    ext_modules=[
-        Extension('pyopcode.api', ['pyopcode/api.cpp'] + opcode_src,
-                  include_dirs=['build_boost/include', 'build_boost/include/boost-1_67', 'vendor', 'vendor/opcode', 'vendor/opcode/Ice'],
-                  library_dirs=['pyopcode'],
-                  libraries=libraries,
-                  runtime_library_dirs=runtime_library_dirs,
-                  extra_compile_args=compile_args,
-                  extra_link_args=link_args),
-    ],
-    package_data=package_data,
-    include_package_data=True,
+    url="https://github.com/ClinicalGraphics/pyopcode",
+    description="Opcode bindings using pybind11",
+    ext_modules=ext_modules,
+    extras_require={"test": "pytest"},
+    # Currently, build_ext only provides an optional "highest supported C++
+    # level" feature, but in the future it may provide more features.
+    cmdclass={"build_ext": build_ext},
+    zip_safe=False,
 )
