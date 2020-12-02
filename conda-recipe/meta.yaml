@@ -14,14 +14,14 @@ requirements:
     - {{ compiler('cxx') }}
 
   host:
-    - python {{ python }}
+    - python =3
     - pip
     - pybind11 >=2.6.0
     - boost-cpp # this is uncompiled source dependency only, and does not imply run requirements
 
   run:
-    - python {{ python }}
-    - numpy # not; any numpy is fine, and it is not a build/host requirement
+    - python # note: any python is fine, even python 2!
+    - numpy # note; any numpy is fine, and it is not a build/host requirement
 
 test:
   requires:
@@ -35,4 +35,3 @@ test:
 
 about:
   summary: python bindings for opcode using pybind11.
-  license_file: LICENSE
