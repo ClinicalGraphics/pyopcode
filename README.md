@@ -9,7 +9,7 @@ The one and only. To get started with development:
 
 Distribution:
 
-* Run `conda build conda-recipe --python=3.9`; or some python version of your choosing
+* Run `conda build conda-recipe`. Building wheels is also supported.
 
 # manylinux1
 
