@@ -9,6 +9,8 @@ import sys
 
 __version__ = "0.4.0"
 
+is_win = (sys.platform == 'win32')
+
 # The main interface is through Pybind11Extension.
 # * You can add cxx_std=11/14/17, and then build_ext can be removed.
 # * You can set include_pybind11=false to add the include directory yourself,
@@ -19,12 +21,17 @@ __version__ = "0.4.0"
 #   reproducible builds (https://github.com/pybind/python_example/pull/53)
 
 opcode_src = sorted(iglob("vendor/opcode/**/*.cpp", recursive=True))
-opcode_include = ['vendor', 'vendor/opcode', 'vendor/opcode/Ice']
+opcode_include = ['vendor', 'vendor/opcode', 'vendor/opcode/Ice', 'boost_1_74_0']
+
+compile_args = []
+if is_win:
+    compile_args.extend(["/DICE_NO_DLL", "/DBAN_OPCODE_AUTOLINK"])
 
 ext_modules = [
     Pybind11Extension("pyopcode",
         ["pyopcode/api.cpp"] + opcode_src,
         include_dirs=opcode_include,
+        extra_compile_args=compile_args,
     ),
 ]
 
