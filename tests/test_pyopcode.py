@@ -22,15 +22,11 @@ def test_invalid():
     vertices = np.random.rand(10, 3)
     triangles = np.arange(10 * 3).reshape(10, 3).astype(np.int32)
 
-    with pytest.raises(ValueError):
+    with pytest.raises(Exception):
         pyopcode.Model(vertices, triangles)
 
     vertices = np.random.rand(10, 2).astype(np.float32)
-    with pytest.raises(ValueError):
-        pyopcode.Model(vertices, triangles)
-
-    vertices = np.asfortranarray(np.random.rand(10, 3).astype(np.float32))
-    with pytest.raises(ValueError):
+    with pytest.raises(Exception):
         pyopcode.Model(vertices, triangles)
 
 
@@ -123,16 +119,16 @@ def test_GIL():
     results = pool.imap_unordered(lambda affine: col.query(affine, identity), transform_generator())
 
     import time
-    start = time.clock()
+    start = time.time()
     for r in results:
         print(len(r))
-    print(time.clock() - start)
+    print(time.time() - start)
 
 
 def test_rays():
     vertices, triangles = triangle_soup(10)
     mesh = pyopcode.Model(vertices, triangles)
 
-    rays = np.random.normal(0, 1, (100, 2, 3)).reshape(-1, 6).astype(np.float32)
+    rays = np.random.normal(0, 1, (100, 2, 3)).astype(np.float32)
     faces = mesh.ray_query(rays)
     print(faces)
