@@ -12,6 +12,12 @@ Current functionality includes:
 
 See the test suite for various usage examples.
 
+## Install
+
+`pip install pyopcode`
+
+64-bit wheels are on pypi for cpython 3.6+ on Windows, Linux and MacOS, including ARM builds.
+
 ## API
 
 ### pyopcode.Model(vertices, triangle)
