@@ -121,8 +121,9 @@ Ensure you update the version number in `setup.py`.
 ## Dependency management
 
 Sadly the virtual environment and dependency management tools
-aren't quite ready for libraries just yet. So when adjusting dependencies,
-ensure you update all places they are configured:
+aren't quite ready for libraries with C extensions just yet.
+So when adjusting dependencies, ensure you update all places
+they are configured:
 
 * `.github\workflows\build_wheels.yml`
   * Check `CIBW_TEST_REQUIRES`
