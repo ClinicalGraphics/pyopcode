@@ -13,7 +13,6 @@ typedef py::array_t<float, py::array::c_style> float_array;
 typedef py::array_t<int32_t, py::array::c_style> int_array;
 
 
-
 /**
  * \brief constructs a set of strides for a c-style array, given its shape and itemsize
  */
