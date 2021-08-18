@@ -1,7 +1,0 @@
-.cache
-.pytest_cache
-.vscode
-boost_1_66_0/*
-build/*
-build_boost/*
-dist/*

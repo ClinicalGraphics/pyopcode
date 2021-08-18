@@ -1,6 +1,4 @@
-boost_*
 build
-build_boost
 .vscode
 *.pyc
 __pycache__
@@ -11,3 +9,5 @@ dist
 *.so.*
 .pytest_cache
 .cache
+*.whl
+.venv
