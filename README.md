@@ -114,4 +114,22 @@ Develop and test locally (replace `bin` with `Scripts` on windows):
 * `.venv/bin/pytest tests`
 * `.venv/bin/black .`
 
-Release by pushing a tag that starts with `v`. E.g. `v0.4.0`.
+Release by pushing a tag that starts with `v`, for example `v0.1.0`.
+
+Ensure you update the version number in `setup.py`.
+
+## Dependency management
+
+Sadly the virtual environment and dependency management tools
+aren't quite ready for libraries just yet. So when adjusting dependencies,
+ensure you update all places they are configured:
+
+* `.github\workflows\build_wheels.yml`
+  * Check `CIBW_TEST_REQUIRES`
+  * Check `Build sdist`
+* `pyproject.toml`
+  * Check `build-system.requires`
+* `setup.py`
+  * Check `install_requires`
+  * Check `extras_require`
+  * Check `python_requires`
