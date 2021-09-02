@@ -93,6 +93,36 @@ def test_no_triangle_intersection():
     assert idx.shape[0] == 0
 
 
+def test_triangle_intersection_transform():
+    vertices_a, triangles_a = triangle_soup(10)
+    vertices_b, triangles_b = triangle_soup(
+        10, range=(40, 40)
+    )  # apply insane offset to avoid any intersection
+    mesh_a = pyopcode.Model(vertices_a, triangles_a)
+    mesh_b = pyopcode.Model(vertices_b, triangles_b)
+
+    collider = pyopcode.Collision(mesh_a, mesh_b)
+    transform = np.identity(4).astype(np.float32)
+
+    # test if collision still works when we use a transform
+    # that is NOT the identity transform
+    offset = -40
+    transform_b = (
+        np.array(
+            [
+                [1, 0, 0, offset],
+                [0, 1, 0, offset],
+                [0, 0, 1, offset],
+                [0, 0, 0, 1],
+            ]
+        )
+        .astype(np.float32)
+        .T
+    )
+    idx = collider.query(transform, transform_b)
+    assert idx.shape[0] == 19
+
+
 def test_basic():
     """no runtime erros plox"""
     vertices, triangles = triangle_soup(10)
